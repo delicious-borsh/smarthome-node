@@ -13,5 +13,7 @@ void setup() {
 void loop() {
   connectToHost("", "");
 
-  send("GET /state/all?id=114");
+  String response = send("GET /state/all?id=114");
+
+  Serial.println("response = " + response);
 }

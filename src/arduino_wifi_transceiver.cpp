@@ -48,14 +48,16 @@ void connectToHost(String host, String port) {
 void disconnect() {
 }
 
-void send(String data) {
+String send(String data) {
   //  sendCommand("AT+CIPMUX=1", 1000);
   //  sendCommand("AT+CIPSTART=0,\"TCP\",\"" + HOST + "\"," + PORT, 2000);
-  sendStringRequest(data);
+  String response = sendStringRequest(data);
 
   delay(3000);
 
   // sendCommand("AT+CIPCLOSE=0", 1000);
+
+  return response;
 }
 
 void configureAsStation() {
@@ -98,13 +100,13 @@ void connectToWIFI() {
   } while (FAIL_8266);
 }
 
-void sendStringRequest(String data) {
+String sendStringRequest(String data) {
   String cipSend = "AT+CIPSEND=";
   cipSend += 0;
   cipSend += ",";
   cipSend += data.length() + 4;
   sendCommand(cipSend, 1000);
-  sendCommand(prepareData(data), 2000);
+  return sendCommand(prepareData(data), 2000);
 }
 
 String prepareData(String data) {
