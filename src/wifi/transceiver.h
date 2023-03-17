@@ -1,13 +1,11 @@
-#ifndef arduino_wifi_transceiver_h
-#define arduino_wifi_transceiver_h
+#ifndef transceiver_h
+#define transceiver_h
 #include <Arduino.h>
-
 
 void initialize();
 String send(String data);
 void connectToHost(String host, String port);
 void disconnect();
-
 
 void configureAsStation();
 void connectToWIFI();
