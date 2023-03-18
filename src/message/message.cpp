@@ -12,13 +12,13 @@ byte message[MESSAGE_MAX_SIZE];
 byte messageLength = 0;
 
 void getMessage(byte buffer[]) {
-    for (unsigned int i; i < messageLength; i++) {
+    for (unsigned int i = 0; i < messageLength; i++) {
         buffer[i] = message[i];
     }
 }
 
 void resetMessage() {
-    for (unsigned int i; i < MESSAGE_MAX_SIZE; i++) {
+    for (unsigned int i = 0; i < MESSAGE_MAX_SIZE; i++) {
         message[i] = 0;
     }
 
@@ -58,6 +58,14 @@ byte getTypeByte(SensorType type) {
 byte addPayload(Measurements measurements[], byte measurementsSize) {
     byte sensor_block_size = measurementsSize * 3;
 
+    for (unsigned int i = 0; i < measurementsSize; i++) {
+        Serial.println("Printing measurements");
+        Serial.println("Measurement at " + String(i) + "has type " +
+                       String(getTypeByte(measurements[i].type)));
+        Serial.println("Measurement at " + String(i) + "has value " +
+                       String(convert(measurements[i].value)));
+    }
+
     message[3] = TAG_SENSOR_BLOCK_BEGIN;
     message[4] = sensor_block_size;
 
@@ -65,16 +73,17 @@ byte addPayload(Measurements measurements[], byte measurementsSize) {
 
     byte currentPosition = sensorBlockStartPosition;
 
-    for (unsigned int i; i < measurementsSize; i++) {
+    for (unsigned int i = 0; i < measurementsSize; i++) {
         Serial.println("Processing sensor at " + String(i));
         message[currentPosition] = getTypeByte(measurements[i].type);
         message[currentPosition + 1] = 1;
         message[currentPosition + 2] = convert(measurements[i].value);
 
         currentPosition += 3;
+        Serial.println("currentPosition is now " + String(currentPosition));
     }
 
-    return currentPosition;
+    return currentPosition - 3;
 }
 
 byte createMessage(byte stationId, Measurements measurements[],

@@ -103,7 +103,7 @@ String sendStringRequest(String data) {
     cipSend += ",";
     cipSend += data.length() + 4;
     sendCommand(cipSend, 1000);
-    return sendCommand(prepareData(data), 2000);
+    return sendCommand(prepareData(data), 5000);
 }
 
 String prepareData(String data) {
@@ -118,8 +118,8 @@ String getHeaders(int contentLength) {
     httpHeader += "Content-Length: ";
     httpHeader += contentLength;
     httpHeader += "\r\n";
-    // httpHeader += "Connection: close";
-    // httpHeader += "\r\n";
+    httpHeader += "Connection: close";
+    httpHeader += "\r\n";
 
     return httpHeader;
 }
@@ -140,6 +140,6 @@ String sendCommand(String command, const int timeout) {
         }
     }
 
-    Serial.println("Response : " + response);
+    Serial.println("Response : " + String(response));
     return response;
 }

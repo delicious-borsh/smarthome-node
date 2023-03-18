@@ -13,17 +13,19 @@ void printMsg(byte msg[], byte msgLen) {
 }
 
 String createMessage(byte nodeId) {
+    removeSensor(0);
+
     addSensor(A0, TEMP);
     addSensor(A1, HUM);
-    addSensor(A2, TEMP);
+    // addSensor(A2, TEMP);
 
-    Measurements measurements[3];
+    Measurements measurements[2];
 
     measure(measurements);
 
     resetMessage();
 
-    byte msg_len = createMessage(nodeId, measurements, 3);
+    byte msg_len = createMessage(nodeId, measurements, 2);
 
     byte msg[msg_len];
 
