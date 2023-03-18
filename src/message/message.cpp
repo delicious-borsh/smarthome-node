@@ -1,7 +1,5 @@
 #include "message.h"
 
-#include "../sensor/sensor.h"
-
 #define MESSAGE_MAX_SIZE 128
 
 #define TAG_SENSOR_BLOCK_BEGIN 10
@@ -13,8 +11,6 @@
 byte message[MESSAGE_MAX_SIZE];
 byte messageLength = 0;
 
-int getMessageLength() { return messageLength; }
-
 void getMessage(byte buffer[]) {
     for (unsigned int i; i < messageLength; i++) {
         buffer[i] = message[i];
@@ -25,11 +21,16 @@ void resetMessage() {
     for (unsigned int i; i < MESSAGE_MAX_SIZE; i++) {
         message[i] = 0;
     }
+
+    messageLength = 0;
 }
- void createHeader(byte stationId, byte payloadSize) {
+
+byte addHeader(byte stationId, byte payloadSize) {
     message[0] = 0;
     message[1] = stationId;
     message[2] = payloadSize;
+
+    return 3;
 }
 
 byte convert(int value) { return map(value, 0, 1023, 0, 255); }
@@ -60,19 +61,28 @@ byte addPayload(Measurements measurements[], byte measurementsSize) {
     message[3] = TAG_SENSOR_BLOCK_BEGIN;
     message[4] = sensor_block_size;
 
-    byte currentPosition = 5;
+    byte sensorBlockStartPosition = 5;
 
-    for (unsigned int i; i < measurementsSize; i++, currentPosition += 3) {
+    byte currentPosition = sensorBlockStartPosition;
+
+    for (unsigned int i; i < measurementsSize; i++) {
+        Serial.println("Processing sensor at " + String(i));
         message[currentPosition] = getTypeByte(measurements[i].type);
         message[currentPosition + 1] = 1;
         message[currentPosition + 2] = convert(measurements[i].value);
+
+        currentPosition += 3;
     }
 
-    return currentPosition + 2;
+    return currentPosition;
 }
 
-
-void createMessage(byte stationId, Measurements measurements[], byte measurementsSize) {
+byte createMessage(byte stationId, Measurements measurements[],
+                   byte measurementsSize) {
     byte payloadSize = addPayload(measurements, measurementsSize);
-    createHeader(stationId, payloadSize);
+    byte headerSize = addHeader(stationId, payloadSize);
+
+    messageLength = headerSize + payloadSize;
+
+    return messageLength;
 }

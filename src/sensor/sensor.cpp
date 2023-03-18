@@ -26,9 +26,13 @@ void addSensor(int pin, SensorType type) {
 
 void removeSensor(int pin) {}
 
+int read(int pin) {
+    return analogRead(pin);
+}
+
 void measure(Measurements buffer[]) {
     for (unsigned int i; i < currentSize; i++) {
-        int result = analogRead(sensorArray[i].pin);
+        int result = read(sensorArray[i].pin);
         buffer[i] = Measurements{sensorArray[i].type, result};
     }
 }

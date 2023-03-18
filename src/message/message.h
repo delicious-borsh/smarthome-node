@@ -4,8 +4,7 @@
 
 #include "../sensor/sensor.h"
 
-void createMessage(byte stationId, Measurements measurements[], byte measurementsSize);
-int getMessageLength();
+byte createMessage(byte stationId, Measurements measurements[], byte measurementsSize);
 void getMessage(byte buffer[]);
 
 void resetMessage();

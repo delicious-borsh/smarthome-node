@@ -24,5 +24,8 @@ String toHex(byte array[], int size) {
         hexstring += String(array[i], HEX);
     }
 
-    return HexString2ASCIIString(hexstring);
+    Serial.println("Temp hex is " + hexstring);
+
+    // return HexString2ASCIIString(hexstring);
+    return hexstring;
 }
