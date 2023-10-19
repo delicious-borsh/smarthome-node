@@ -1,6 +1,6 @@
 #include "smarthome_node.h"
 
-void connectToHost() { initialize(); }
+void connectToWifi() { initialize(); }
 
 void printMsg(byte msg[], byte msgLen) {
     Serial.println("Print msg before hex. Len=" + String(msgLen));
@@ -41,11 +41,8 @@ String createMessage(byte nodeId) {
 }
 
 void process_cycle(byte nodeId) {
-    connectToHost("", "");
+    // String msg = createMessage(nodeId);
 
-    String msg = createMessage(nodeId);
+    send("GET /state/all?id=114");
 
-    String response = send("GET /state/all?id=114&payload=" + msg);
-
-    Serial.println("response = " + response);
 }

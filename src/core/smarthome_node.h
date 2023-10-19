@@ -7,7 +7,7 @@
 #include "../sensor/sensor.h"
 #include "../wifi/transceiver.h"
 
-void connectToHost();
+void connectToWifi();
 void process_cycle(byte nodeId);
 
 #endif

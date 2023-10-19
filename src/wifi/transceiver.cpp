@@ -7,8 +7,8 @@
 
 String AP = "Asus";
 String PASS = "VASILISA";
-String HOST = "192.168.1.88";
-String PORT = "8080";
+String HOST = "192.168.1.29";
+String PORT = "8000";
 
 SoftwareSerial esp8266(RX, TX);
 
@@ -38,26 +38,14 @@ void initialize() {
 }
 
 void connectToHost(String host, String port) {
-    sendCommand("AT+CIPMUX=1", 1000);
+    sendCommand("AT+CIPMUX=0", 1000);
     delay(3000);
 
-    sendCommand("AT+CIPSTART=0,\"TCP\",\"" + HOST + "\"," + PORT, 2000);
+    sendCommand("AT+CIPSTART=,\"TCP\",\"" + HOST + "\"," + PORT, 2000);
     delay(3000);
 }
 
 void disconnect() {}
-
-String send(String data) {
-    //  sendCommand("AT+CIPMUX=1", 1000);
-    //  sendCommand("AT+CIPSTART=0,\"TCP\",\"" + HOST + "\"," + PORT, 2000);
-    String response = sendStringRequest(data);
-
-    delay(3000);
-
-    // sendCommand("AT+CIPCLOSE=0", 1000);
-
-    return response;
-}
 
 void configureAsStation() {
     boolean FAIL_8266 = false;
@@ -97,13 +85,26 @@ void connectToWIFI() {
     } while (FAIL_8266);
 }
 
+void send(String data) {
+    String getData = "GET /state/all?id=114";
+    sendCommand("AT+CIPMUX=0", 3000);
+    delay(3000);
+    sendCommand("AT+CIPSTART=\"TCP\",\"" + HOST + "\"," + PORT, 3000);
+
+    sendStringRequest(getData);
+
+    delay(1500);
+
+    sendCommand("AT+CIPCLOSE", 1000);
+}
+
 String sendStringRequest(String data) {
     String cipSend = "AT+CIPSEND=";
-    cipSend += 0;
-    cipSend += ",";
+    // cipSend += 0;
+    // cipSend += ",";
     cipSend += data.length() + 4;
     sendCommand(cipSend, 1000);
-    return sendCommand(prepareData(data), 5000);
+    sendCommand(prepareData(data), 2000);
 }
 
 String prepareData(String data) {
@@ -124,22 +125,21 @@ String getHeaders(int contentLength) {
     return httpHeader;
 }
 
-String sendCommand(String command, const int timeout) {
-    Serial.println("Executing command: " + command);
+void sendCommand(String command, const int timeout) {
+  Serial.println("Executing command: " + command);
 
-    String response = "";
+  String response = "";
 
-    esp8266.print(command);
-    esp8266.print("\r\n");
+  esp8266.print(command);
+  esp8266.print("\r\n");
 
-    long int startTime = millis();
+  long int startTime = millis();
 
-    while ((startTime + timeout) > millis()) {
-        while (esp8266.available()) {
-            response += esp8266.readString() + "\n";
-        }
+  while (  millis()-startTime < timeout) {
+    while (esp8266.available()) {
+      response += esp8266.readString() + "\n";
     }
+  }
 
-    Serial.println("Response : " + String(response));
-    return response;
+  Serial.println("Response : " + response);
 }
